@@ -32,10 +32,18 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: 2100000, guid: 338e069810ae20d4187bb5be335ed6cd, type: 2}
+    - target: {fileID: 1366320327512348768, guid: cca7ca7fef4016648a7396ddd83e4967, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 04f8473ecccc1d84c9f0f446d6b54a30, type: 2}
     - target: {fileID: 1822386568387377731, guid: cca7ca7fef4016648a7396ddd83e4967, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 3d3e585e339efb3498e1d3f8c654367a, type: 2}
+    - target: {fileID: 1890820885744794870, guid: cca7ca7fef4016648a7396ddd83e4967, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2121160836500977813, guid: cca7ca7fef4016648a7396ddd83e4967, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -48,6 +56,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 60fabb37e45849045a4f45d295d77670, type: 2}
+    - target: {fileID: 2895117826794376580, guid: cca7ca7fef4016648a7396ddd83e4967, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3132516394311158125, guid: cca7ca7fef4016648a7396ddd83e4967, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -94,7 +106,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5682633802629659838, guid: cca7ca7fef4016648a7396ddd83e4967, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.00000028978081
+      value: 0.027
       objectReference: {fileID: 0}
     - target: {fileID: 5682633802629659838, guid: cca7ca7fef4016648a7396ddd83e4967, type: 3}
       propertyPath: m_LocalPosition.z
@@ -140,6 +152,14 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: 2100000, guid: 338e069810ae20d4187bb5be335ed6cd, type: 2}
+    - target: {fileID: 6020032610100817655, guid: cca7ca7fef4016648a7396ddd83e4967, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6240914837983178323, guid: cca7ca7fef4016648a7396ddd83e4967, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7149759597706823391, guid: cca7ca7fef4016648a7396ddd83e4967, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -181,6 +201,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5014500871186048516, guid: cca7ca7fef4016648a7396ddd83e4967, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2744704569676372986}
+    - targetCorrespondingSourceObject: {fileID: 5014500871186048516, guid: cca7ca7fef4016648a7396ddd83e4967, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1353073461887264261}
   m_SourcePrefab: {fileID: 100100000, guid: cca7ca7fef4016648a7396ddd83e4967, type: 3}
 --- !u!1 &918554280943426378 stripped
 GameObject:
@@ -207,9 +230,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
-  m_Height: 1.8764861
+  m_Height: 1.8
   m_Direction: 1
-  m_Center: {x: 0, y: 1.0864404, z: 0}
+  m_Center: {x: 0, y: 0.93, z: 0}
 --- !u!54 &-6250155967412029283
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -250,3 +273,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DeplacementJoueur
   vitesse: 1
+--- !u!114 &1353073461887264261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 918554280943426378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8159b644dc39ba40b9724dc8ef5a3fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PoseurDeBombe
+  prefabBombe: {fileID: 3693090167899509614, guid: 5dc62e70d73e37b40af66e4e0648188a, type: 3}

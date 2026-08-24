@@ -7,7 +7,7 @@ public class Bombe : MonoBehaviour
 
     [Header("Paramètres de gameplay")]
     public float tempsAvantExplosion = 3f;
-    public int porteeExplosion = 2; // Le nombre de cases que l'explosion va parcourir
+    public int porteeExplosion = 1; // Le nombre de cases que l'explosion va parcourir
     public LayerMask calqueMurs;    // Permet de cibler uniquement la couche "Murs"
 
     void Start()

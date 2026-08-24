@@ -1,0 +1,8 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="Page" style="flex-grow: 1; flex-direction: row;">
+        <ui:VisualElement name="Navbar" style="flex-grow: 1; flex-direction: column; -unity-background-image-tint-color: rgb(255, 255, 255); background-color: rgb(188, 66, 66); width: 20%; align-items: center; justify-content: space-around;">
+            <ui:Button text="Quitter" name="Quitter" focusable="false" style="height: 10%; width: 90%; align-items: center;"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="Visuel" style="flex-grow: 1; background-color: rgb(136, 115, 48); width: 80%; background-image: url(&quot;project://database/Assets/UI/VueScene_RT.renderTexture?fileID=8400000&amp;guid=cabc3a504080a77499b86c8b62aa2901&amp;type=2#VueScene_RT&quot;);"/>
+    </ui:VisualElement>
+</ui:UXML>
