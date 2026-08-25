@@ -14,4 +14,3 @@ Pour tester le jeu et voir l'avancement, il faudra cloner le répo et double cli
 
 Vous n'avez pas besoins d'avoir Unity sur votre PC pour faire tourner le jeu.
 
- **Attention !** Si jamais je n'ai pas encore ajouté de bouton pour stopper le jeu, faire Ctrl + Alt + Suppr pour ouvrir le gestionnaire des tâches et stopper le jeu. 
