@@ -10,14 +10,32 @@ public class Bombe : MonoBehaviour
     public int porteeExplosion = 1; // Le nombre de cases que l'explosion va parcourir
     public LayerMask calqueMurs;    // Permet de cibler uniquement la couche "Murs"
 
+    // --- NOUVEAU : On prépare une variable pour stocker l'inventaire ---
+    private Inventaire inventaireJoueur;
+
     void Start()
     {
-        // La méthode Invoke permet d'appeler une fonction après un délai (en secondes)
+        // La bombe cherche l'inventaire du joueur
+        inventaireJoueur = FindObjectOfType<Inventaire>();
+
+        // NOUVEAU : La bombe copie la portée actuelle du joueur !
+        if (inventaireJoueur != null)
+        {
+            porteeExplosion = inventaireJoueur.porteeExplosion;
+        }
+
+        // Lance le compte à rebours
         Invoke("Exploser", tempsAvantExplosion);
     }
 
     void Exploser()
     {
+        // --- NOUVEAU : On prévient l'inventaire que cette bombe n'est plus sur la carte ---
+        if (inventaireJoueur != null)
+        {
+            inventaireJoueur.EnleverBombeDeCarte();
+        }
+
         // 1. Créer l'explosion au centre (à l'emplacement exact de la bombe)
         Instantiate(prefabExplosion, transform.position, Quaternion.identity);
 

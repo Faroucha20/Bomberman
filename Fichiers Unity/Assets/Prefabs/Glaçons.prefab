@@ -126,6 +126,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d62d5a0748a0bc34eb033ebfbe490760, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MurDestructible
+  bonusDisponibles:
+  - {fileID: 3544393143131131920, guid: b088282f979d64c43a59ed8f7e004809, type: 3}
+  - {fileID: 7281154818117885602, guid: 9568facc38ac4d74eb5d24553404b112, type: 3}
+  - {fileID: 812450114146139536, guid: 7e55b40b8dbda63478566666113b8365, type: 3}
+  chanceDeDrop: 80
 --- !u!114 &5143580665047492851
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3038,7 +3043,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 3492
+  m_VersionIndex: 745
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []

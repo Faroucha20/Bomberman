@@ -3,17 +3,22 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class DeplacementJoueur : MonoBehaviour
 {
-    [Header("Paramètres")]
-    public float vitesse = 5f;
+    // On peut retirer la variable "vitesse" d'ici, car on va la chercher dans l'inventaire !
 
     private Rigidbody rb;
-    private Animator anim; // 1. On déclare l'Animator
+    private Animator anim;
     private Vector3 mouvement;
+    
+    // 1. On crée une place pour stocker l'inventaire
+    private Inventaire monInventaire;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        anim = GetComponent<Animator>(); // 2. On récupère le composant Animator
+        anim = GetComponent<Animator>();
+        
+        // 2. On récupère le script Inventaire qui est attaché au Bomberman
+        monInventaire = GetComponent<Inventaire>(); 
     }
 
     void Update()
@@ -23,7 +28,6 @@ public class DeplacementJoueur : MonoBehaviour
 
         mouvement = new Vector3(axeHorizontal, 0f, axeVertical).normalized;
 
-        // 3. On informe l'Animator si le joueur touche les flèches ou non
         if (anim != null)
         {
             bool bouge = mouvement != Vector3.zero;
@@ -33,7 +37,12 @@ public class DeplacementJoueur : MonoBehaviour
 
     void FixedUpdate()
     {
-        rb.linearVelocity = mouvement * vitesse;
+        // 3. On demande à l'inventaire quelle est la vitesse actuelle
+        // (Le "? monInventaire.vitesseJoueur : 5f" est une sécurité au cas où l'inventaire n'existe pas)
+        float vitesseActuelle = (monInventaire != null) ? monInventaire.vitesseJoueur : 5f;
+
+        // 4. On applique la bonne vitesse au mouvement !
+        rb.linearVelocity = mouvement * vitesseActuelle;
 
         if (mouvement != Vector3.zero)
         {

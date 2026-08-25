@@ -84,6 +84,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: npc_csl_00_character_01f_03 Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 5014500871186048516, guid: cca7ca7fef4016648a7396ddd83e4967, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     - target: {fileID: 5355218383082102215, guid: cca7ca7fef4016648a7396ddd83e4967, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -204,6 +208,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5014500871186048516, guid: cca7ca7fef4016648a7396ddd83e4967, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1353073461887264261}
+    - targetCorrespondingSourceObject: {fileID: 5014500871186048516, guid: cca7ca7fef4016648a7396ddd83e4967, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -28046205317629292}
   m_SourcePrefab: {fileID: 100100000, guid: cca7ca7fef4016648a7396ddd83e4967, type: 3}
 --- !u!1 &918554280943426378 stripped
 GameObject:
@@ -286,3 +293,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PoseurDeBombe
   prefabBombe: {fileID: 3693090167899509614, guid: 5dc62e70d73e37b40af66e4e0648188a, type: 3}
+--- !u!114 &-28046205317629292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 918554280943426378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbec8fda629f6584b957a72894ef5c0f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Inventaire
+  reserveVitesse: 0
+  reserveSac: 0

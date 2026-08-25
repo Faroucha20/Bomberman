@@ -48,7 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Bombe
   prefabExplosion: {fileID: 1452337498299211272, guid: b73bc9333f4019f499e04318a4aa562c, type: 3}
   tempsAvantExplosion: 3
-  porteeExplosion: 2
+  porteeExplosion: 1
   calqueMurs:
     serializedVersion: 2
     m_Bits: 64
