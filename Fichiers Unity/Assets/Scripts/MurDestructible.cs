@@ -27,7 +27,7 @@ public class MurDestructible : MonoBehaviour
 
                 Vector3 spawnPosition = transform.position;
 
-                Quaternion spawnRotation = Quaternion.Euler(-90f, 0f, 0f);
+                Quaternion spawnRotation = Quaternion.Euler(-90f, -0.75f, 0f);
 
                 // 4. On fait apparaître le bonus sélectionné à la position actuelle du mur
                 // Quaternion.identity signifie "aucune rotation par défaut"

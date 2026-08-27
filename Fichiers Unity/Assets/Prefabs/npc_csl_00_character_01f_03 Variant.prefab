@@ -279,7 +279,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ba848326d0e41744bc110c6739f783a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DeplacementJoueur
-  vitesse: 1
 --- !u!114 &1353073461887264261
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -307,3 +306,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Inventaire
   reserveVitesse: 0
   reserveSac: 0
+  vitesseJoueur: 1
+  patinsEnJeu: 1
+  maxPatins: 4
+  bombesEnJeu: 1
+  maxBombes: 4
+  reserveHuile: 0
+  porteeExplosion: 1
+  huileEnJeu: 1
+  maxHuile: 4

@@ -39,31 +39,9 @@ public class UIManager : MonoBehaviour
         labelHuileEnJeu = root.Q<Label>("HuileEnJeu");
 
         // On écoute le clic sur le bouton
-        if (boutonPatins != null)
-        {
-            boutonPatins.clicked += SurClicPatins;
-        }
-
+        if (boutonPatins != null) boutonPatins.clicked += SurClicPatins;
         if (boutonSac != null) boutonSac.clicked += SurClicSac;
         if (boutonHuile != null) boutonHuile.clicked += SurClicHuile;
-
-        if (joueur != null)
-        {
-            joueur.OnVitesseChanged += MAJVitesse;
-            joueur.OnSacChanged += MAJSac;
-            joueur.OnHuileChanged += MAJHuile;
-
-            joueur.OnPatinsEnJeuChanged += MAJPatinsEnJeu; // Nouvel abonnement
-            joueur.OnBombesEnJeuChanged += MAJBombesEnJeu;
-            joueur.OnHuileEnJeuChanged += MAJHuileEnJeu;
-            
-            MAJVitesse(joueur.reserveVitesse);
-            MAJSac(joueur.reserveSac);
-            MAJHuile(joueur.reserveHuile);
-            MAJPatinsEnJeu(joueur.patinsEnJeu, joueur.maxPatins);
-            MAJHuileEnJeu(joueur.huileEnJeu, joueur.maxHuile);
-            MAJBombesEnJeu(joueur.bombesEnJeu, joueur.maxBombes);
-        }
     }
 
     void OnDisable()
@@ -85,20 +63,15 @@ public class UIManager : MonoBehaviour
         if (boutonSac != null) boutonSac.clicked -= SurClicSac;
     }
 
-    // Fonction déclenchée quand on clique sur le bouton "Patins"
+    // Fonction déclenchée quand on clique sur les boutons
     private void SurClicPatins()
     {
-        if (joueur != null)
-        {
-            joueur.UtiliserPatin();
-        }
+        if (joueur != null) joueur.UtiliserPatin();
+
     }
     private void SurClicHuile()
     {
-        if (joueur != null)
-        {
-            joueur.UtiliserHuile();
-        }
+        if (joueur != null) joueur.UtiliserHuile();
     }
     private void SurClicSac()
     {
@@ -106,7 +79,7 @@ public class UIManager : MonoBehaviour
     }
 
 
-
+    // Fonctions pour mettre à jour les labels
 
     private void MAJVitesse(int montant)
     {
@@ -122,8 +95,6 @@ public class UIManager : MonoBehaviour
     {
         if (labelHuileRes != null) labelHuileRes.text = "Restant : " + montant;
     }
-
-
 
 
     private void MAJHuileEnJeu(int enJeu, int max)
@@ -144,5 +115,27 @@ public class UIManager : MonoBehaviour
     private void MAJBombesEnJeu(int enJeu, int max)
     {
         if (labelBombesEnJeu != null) labelBombesEnJeu.text = "En jeu : " + enJeu + "/" + max;
+    }
+
+    // Le générateur appellera cette fonction pour connecter le joueur fraîchement créé
+    public void AssignerJoueur(Inventaire nouveauJoueur)
+    {
+        joueur = nouveauJoueur;
+
+        // On s'abonne aux événements du nouveau joueur
+        joueur.OnVitesseChanged += MAJVitesse;
+        joueur.OnSacChanged += MAJSac;
+        joueur.OnHuileChanged += MAJHuile;
+        joueur.OnPatinsEnJeuChanged += MAJPatinsEnJeu;
+        joueur.OnBombesEnJeuChanged += MAJBombesEnJeu;
+        joueur.OnHuileEnJeuChanged += MAJHuileEnJeu;
+
+        // On met à jour les textes immédiatement avec ses valeurs de départ
+        MAJVitesse(joueur.reserveVitesse);
+        MAJSac(joueur.reserveSac);
+        MAJHuile(joueur.reserveHuile);
+        MAJPatinsEnJeu(joueur.patinsEnJeu, joueur.maxPatins);
+        MAJHuileEnJeu(joueur.huileEnJeu, joueur.maxHuile);
+        MAJBombesEnJeu(joueur.bombesEnJeu, joueur.maxBombes);
     }
 }

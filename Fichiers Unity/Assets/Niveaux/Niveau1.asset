@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3a8885449067cd46a1be870e8e74d94, type: 3}
+  m_Name: Niveau1
+  m_EditorClassIdentifier: Assembly-CSharp::ConfigNiveau
+  prefabSol: {fileID: 4471842904690748459, guid: 6aeb11cd4411a104884a3c9cf892835b, type: 3}
+  prefabMurIndestructible: {fileID: 5928019415843997967, guid: bcc79143a90bd36438d0f1fcef5539b0, type: 3}
+  prefabMurDestructible: {fileID: 7338826815185546134, guid: 18eae6c10c2b72942b71e0805ff6808d, type: 3}
+  nbMursDestructibles: 30
+  monstresAGenerer:
+  - nom: Yeti
+    prefab: {fileID: 5965539620584370841, guid: 67dc92259d9eddb4d9187074a1cab598, type: 3}
+    quantite: 3

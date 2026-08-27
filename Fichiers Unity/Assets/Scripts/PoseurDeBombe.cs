@@ -37,7 +37,7 @@ public class PoseurDeBombe : MonoBehaviour
         float zArrondi = Mathf.Round(positionJoueur.z);
 
         // 5. Définir la position finale de la bombe
-        Vector3 positionSurGrille = new Vector3(xArrondi, 0f, zArrondi); 
+        Vector3 positionSurGrille = new Vector3(xArrondi, -0.75f, zArrondi); 
 
         // 6. Instancier (créer) la bombe dans le jeu
         Instantiate(prefabBombe, positionSurGrille, Quaternion.identity);

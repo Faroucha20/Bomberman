@@ -6,6 +6,7 @@ public class Inventaire : MonoBehaviour
     [Header("Réserves")]
     public int reserveVitesse = 0;
     public int reserveSac = 0;
+    public int reserveHuile = 0;
 
     [Header("Statistiques Patins")]
     public float vitesseJoueur = 1f;
@@ -17,7 +18,7 @@ public class Inventaire : MonoBehaviour
     public int maxBombes = 4;         // Limite maximum de la capacité
     private int bombesActuellementSurCarte = 0; // Compteur invisible pour le jeu
 
-    public int reserveHuile = 0;
+    [Header("Statistiques Huile")]
     public int porteeExplosion = 1;
     public int huileEnJeu = 1;
     public int maxHuile = 4;
