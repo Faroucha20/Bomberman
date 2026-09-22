@@ -68,6 +68,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Prefab_Patins
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: d8d060b0ac5da3643b8cbaf21dcd7703, type: 3}
+      propertyPath: m_TagString
+      value: Bonus
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -96,7 +100,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5dd775d8491f2c04680fc98572b87ae0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bonus
-  estBonusVitesse: 1
+  typeBonus: 0
 --- !u!65 &-8967625627787791984
 BoxCollider:
   m_ObjectHideFlags: 0

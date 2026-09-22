@@ -130,7 +130,7 @@ MonoBehaviour:
   - {fileID: 3544393143131131920, guid: b088282f979d64c43a59ed8f7e004809, type: 3}
   - {fileID: 7281154818117885602, guid: 9568facc38ac4d74eb5d24553404b112, type: 3}
   - {fileID: 812450114146139536, guid: 7e55b40b8dbda63478566666113b8365, type: 3}
-  chanceDeDrop: 80
+  chanceDeDrop: 40
 --- !u!114 &5143580665047492851
 MonoBehaviour:
   m_ObjectHideFlags: 0

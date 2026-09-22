@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3a8885449067cd46a1be870e8e74d94, type: 3}
+  m_Name: Niveau5
+  m_EditorClassIdentifier: Assembly-CSharp::ConfigNiveau
+  prefabSol: {fileID: 4471842904690748459, guid: e2098f2e80a19f74fb1afea1d42e5bf8, type: 3}
+  prefabMurIndestructible: {fileID: 5928019415843997967, guid: bcc79143a90bd36438d0f1fcef5539b0, type: 3}
+  prefabMurDestructible: {fileID: 7338826815185546134, guid: 06e98d8eccc10b1449144a5cd225d9ef, type: 3}
+  nbMursDestructibles: 50
+  monstresAGenerer:
+  - nom: Momie
+    prefab: {fileID: 2498598251980344512, guid: f07e42b68c899e043a111483f5b7038d, type: 3}
+    quantite: 3
+  - nom: Lezard
+    prefab: {fileID: 4787734284849576031, guid: 0d1ea86703d5ebb4c8e70d1f1f28e7ff, type: 3}
+    quantite: 3
+  - nom: MonstreSable
+    prefab: {fileID: 3650779365376882937, guid: 98dd2a321a5e3c146afb68c8d7961a57, type: 3}
+    quantite: 5

@@ -4,7 +4,6 @@ using UnityEngine.UIElements; // Indispensable pour utiliser UI Toolkit
 public class GestionMenu : MonoBehaviour
 {
     private UIDocument documentUI;
-    private Button boutonQuitter;
 
     // OnEnable est appelé quand l'objet s'active (parfait pour l'UI)
     void OnEnable()
@@ -15,18 +14,7 @@ public class GestionMenu : MonoBehaviour
         // 2. Récupérer la racine (le point de départ) de l'interface
         VisualElement racine = documentUI.rootVisualElement;
 
-        // 3. Chercher le bouton grâce au nom qu'on lui a donné dans le UI Builder
-        boutonQuitter = racine.Q<Button>("Quitter");
 
-        // 4. Si on a bien trouvé le bouton, on lui dit quoi faire quand on clique
-        if (boutonQuitter != null)
-        {
-            boutonQuitter.clicked += QuitterLeJeu;
-        }
-        else
-        {
-            Debug.LogError("Le bouton 'BoutonQuitter' est introuvable. Vérifiez son nom dans le UI Builder !");
-        }
     }
 
     void QuitterLeJeu()

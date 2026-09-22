@@ -10,7 +10,6 @@ Unity avec C#
 
 ## Tester 
 
-Pour tester le jeu et voir l'avancement, il faudra cloner le répo et double cliquer sur le fichier .exe.
+Pour tester le jeu et voir l'avancement, il faudra voire dans la Releases.
 
-Vous n'avez pas besoins d'avoir Unity sur votre PC pour faire tourner le jeu.
-
+Vous n'avez pas besoins d'avoir Unity sur votre PC pour tester le jeu.

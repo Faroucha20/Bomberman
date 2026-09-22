@@ -1,87 +1,232 @@
 using UnityEngine;
+using System.Collections;
 
 public class Monstre : MonoBehaviour
 {
     [Header("Paramètres du Monstre")]
     public float vitesse = 1f;
-    
-    // Le même calque (Layer) que tu as utilisé pour l'explosion de tes bombes !
     public LayerMask calqueMurs; 
+    
+    [Header("Capacités Spéciales")]
+    public bool peutDetruireMurs = false;
+    public bool peutTraverserMursDestructibles = false; 
+    
+    public bool mouvementAleatoire = false; 
+    public float tempsAvantChangement = 3f; 
+    private float chronoChangement = 0f;    
+
+    [Header("Capacité : Poseur de Bombes")]
+    public bool peutPoserBombes = false;
+    public GameObject prefabBombe; 
+    public float tempsMiniEntreBombes = 4f; 
+    public float tempsMaxiEntreBombes = 8f; 
+    private float chronoBombe = 0f;
+    private float prochainObjectifTemps = 0f;
+
+    [Header("Paramètres d'Animation")]
+    public float tempsAttaque = 2f; 
 
     private Vector3 directionActuelle;
+    private Animator anim;
+    private bool estEnTrainDAttaquer = false; 
 
     void Start()
     {
-        // Au démarrage, le monstre choisit une direction de départ
+        anim = GetComponent<Animator>();
         ChoisirNouvelleDirection();
+
+        if (peutPoserBombes)
+        {
+            prochainObjectifTemps = Random.Range(tempsMiniEntreBombes, tempsMaxiEntreBombes);
+        }
     }
 
     void Update()
     {
-        // On regarde si un mur se trouve juste devant le monstre
-        if (ObstacleDevant(directionActuelle))
+        if (estEnTrainDAttaquer) return;
+        
+        // Si le monstre est complètement bloqué (direction zéro), il cherche une issue
+        if (directionActuelle == Vector3.zero)
         {
-            // S'il y a un mur, on change de sens
             ChoisirNouvelleDirection();
+            // S'il est toujours bloqué après avoir cherché, on arrête là pour cette frame
+            if (directionActuelle == Vector3.zero) return; 
+        }
+
+
+        RaycastHit objetTouche; 
+
+        if (ObstacleDevant(directionActuelle, out objetTouche))
+        {
+            MurDestructible mur = objetTouche.collider.GetComponent<MurDestructible>();
+
+            if (mur != null && peutDetruireMurs)
+            {
+                StartCoroutine(SequenceAttaqueMur(mur));
+            }
+            else
+            {
+                ChoisirNouvelleDirection();
+                chronoChangement = 0f; 
+            }
         }
         else
         {
-            // Sinon, on avance ! (Space.World permet de rester bien aligné sur la grille)
             transform.Translate(directionActuelle * vitesse * Time.deltaTime, Space.World);
-            
-            // On oriente le monstre pour qu'il regarde dans la direction où il marche
+
             if (directionActuelle != Vector3.zero)
             {
                 transform.forward = directionActuelle;
             }
+
+            if (mouvementAleatoire)
+            {
+                chronoChangement += Time.deltaTime; 
+
+                if (chronoChangement >= tempsAvantChangement)
+                {
+                    Vector3 centreCase = new Vector3(Mathf.Round(transform.position.x), transform.position.y, Mathf.Round(transform.position.z));
+                    
+                    if (Vector3.Distance(transform.position, centreCase) < 0.1f)
+                    {
+                        ChoisirNouvelleDirection();
+                        chronoChangement = 0f; 
+                    }
+                }
+            }
+
+            // --- MISE À JOUR : LANCER LA BOMBE DEVANT ---
+            if (peutPoserBombes)
+            {
+                chronoBombe += Time.deltaTime;
+
+                if (chronoBombe >= prochainObjectifTemps)
+                {
+                    Vector3 centreCaseActuelle = new Vector3(Mathf.Round(transform.position.x), 0f, Mathf.Round(transform.position.z));
+                    
+                    Vector2 positionMonstre2D = new Vector2(transform.position.x, transform.position.z);
+                    Vector2 centreCase2D = new Vector2(centreCaseActuelle.x, centreCaseActuelle.z);
+
+                    if (Vector2.Distance(positionMonstre2D, centreCase2D) < 0.1f)
+                    {
+                        // 1. On calcule les coordonnées de la case juste devant le monstre
+                        Vector3 caseDevant = centreCaseActuelle + directionActuelle;
+                        
+                        // 2. On vérifie s'il y a un obstacle (mur) sur cette case
+                        // On rehausse le point de vérification de 0.5f pour être bien au milieu du bloc
+                        bool caseDevantOccupee = Physics.CheckSphere(caseDevant + Vector3.up * 0.5f, 0.4f, calqueMurs);
+                        
+                        // 3. On choisit la destination finale de la bombe
+                        Vector3 positionFinaleBombe;
+                        if (caseDevantOccupee)
+                        {
+                            positionFinaleBombe = centreCaseActuelle; // La case devant est prise, on pose la bombe aux pieds
+                        }
+                        else
+                        {
+                            positionFinaleBombe = caseDevant; // La voie est libre, on la lance devant !
+                        }
+
+                        if (prefabBombe != null)
+                        {
+                            StartCoroutine(SequencePoserBombe(positionFinaleBombe));
+                        }
+
+                        chronoBombe = 0f;
+                        prochainObjectifTemps = Random.Range(tempsMiniEntreBombes, tempsMaxiEntreBombes);
+                    }
+                }
+            }
         }
     }
 
-    bool ObstacleDevant(Vector3 directionAVerifier)
+    bool ObstacleDevant(Vector3 directionAVerifier, out RaycastHit infosTouche)
     {
-        // On lance le laser depuis le centre du monstre. 
-        // On remonte un peu (Vector3.up * 0.5f) pour que le laser ne frotte pas bêtement contre le sol.
         Vector3 origineLaser = transform.position + Vector3.up * 0.5f;
-
-        // La distance d'anticipation (0.6 est parfait si tes murs font 1x1 mètre)
         float distanceVerif = 0.6f;
+        
+        bool touche = Physics.Raycast(origineLaser, directionAVerifier, out infosTouche, distanceVerif, calqueMurs);
+        
+        if (touche && peutTraverserMursDestructibles)
+        {
+            MurDestructible mur = infosTouche.collider.GetComponent<MurDestructible>();
+            if (mur != null)
+            {
+                return false; 
+            }
+        }
+        
+        return touche;
+    }
 
-        // Physics.Raycast renvoie "true" s'il touche un mur, et "false" si la voie est libre
-        return Physics.Raycast(origineLaser, directionAVerifier, distanceVerif, calqueMurs);
+    IEnumerator SequenceAttaqueMur(MurDestructible murADetruire)
+    {
+        estEnTrainDAttaquer = true; 
+
+        if (anim != null) anim.SetTrigger("Attaque");
+
+        yield return new WaitForSeconds(tempsAttaque);
+
+        if (murADetruire != null)
+        {
+            murADetruire.Detruire(); 
+        }
+
+        ChoisirNouvelleDirection();
+        estEnTrainDAttaquer = false;
+    }
+
+    IEnumerator SequencePoserBombe(Vector3 positionDeLaBombe)
+    {
+        estEnTrainDAttaquer = true; 
+
+        if (anim != null) anim.SetTrigger("Attaque");
+
+        yield return new WaitForSeconds(tempsAttaque);
+
+        positionDeLaBombe.y = -0.75f;
+
+        // 1. On mémorise la bombe qu'on vient de créer
+        GameObject laBombe = Instantiate(prefabBombe, positionDeLaBombe, Quaternion.identity);
+
+        // 2. On récupère son script et on force sa portée à 1 !
+        Bombe scriptBombe = laBombe.GetComponent<Bombe>();
+        if (scriptBombe != null)
+        {
+            // --- C'EST ICI LA CORRECTION ---
+            // On utilise bien le nouveau nom : porteeExplosion
+            scriptBombe.porteeExplosion = 1;
+        }
+
+        estEnTrainDAttaquer = false;
     }
 
     void ChoisirNouvelleDirection()
     {
-        // 1. RECENTRAGE MAGIQUE : Avant de tourner, on replace le monstre EXACTEMENT 
-        // au milieu de sa case (x et z arrondis). Ça évite qu'il se bloque dans les coins !
         float xArrondi = Mathf.Round(transform.position.x);
         float zArrondi = Mathf.Round(transform.position.z);
         transform.position = new Vector3(xArrondi, transform.position.y, zArrondi);
 
-        // 2. Les 4 directions possibles dans Bomberman
         Vector3[] directionsPossibles = { Vector3.forward, Vector3.back, Vector3.left, Vector3.right };
-        
-        bool directionTrouvee = false;
-        int tentatives = 0; // Une sécurité pour ne pas faire bugger le jeu
 
-        // On boucle jusqu'à trouver une direction sans mur (avec une limite de 10 essais)
+        bool directionTrouvee = false;
+        int tentatives = 0;
+
         while (!directionTrouvee && tentatives < 10)
         {
-            // On tire une direction au hasard dans notre liste
             int indexHasard = Random.Range(0, directionsPossibles.Length);
             Vector3 directionTest = directionsPossibles[indexHasard];
 
-            // On lance un laser dans cette nouvelle direction. Si c'est libre...
-            if (!ObstacleDevant(directionTest))
+            RaycastHit dummyHit; 
+            if (!ObstacleDevant(directionTest, out dummyHit))
             {
-                directionActuelle = directionTest; // On valide cette direction
-                directionTrouvee = true;           // On arrête la boucle
+                directionActuelle = directionTest;
+                directionTrouvee = true;
             }
-            
+
             tentatives++;
         }
 
-        // Si après 10 essais on n'a rien trouvé (ex: le monstre est coincé entre 4 bombes), il s'arrête
         if (!directionTrouvee)
         {
             directionActuelle = Vector3.zero;

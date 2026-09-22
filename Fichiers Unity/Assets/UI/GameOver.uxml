@@ -1,0 +1,8 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="Page" style="flex-grow: 1; flex-direction: row;">
+        <ui:Image source="project://database/Assets/Images/GameOver.png?fileID=2800000&amp;guid=d3672665a311a124d83a42cce9b52fc8&amp;type=3#GameOver" scale-mode="ScaleAndCrop" style="position: relative; width: 100%; height: 100%;">
+            <ui:Button text="Réssayer" name="Ressayer" style="position: absolute; top: 65%; width: 20%; height: 10%; left: 20%; background-color: rgb(36, 36, 36); color: rgb(255, 255, 255); border-top-left-radius: 15px; border-top-right-radius: 15px; border-bottom-right-radius: 15px; border-bottom-left-radius: 15px;"/>
+            <ui:Button text="Quitter" name="Quitter" style="position: absolute; top: 65%; width: 20%; height: 10%; left: auto; right: 20%; color: rgb(255, 255, 255); background-color: rgb(36, 36, 36); border-top-left-radius: 15px; border-top-right-radius: 15px; border-bottom-right-radius: 15px; border-bottom-left-radius: 15px;"/>
+        </ui:Image>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,28 +1,29 @@
 using UnityEngine;
+using System.Collections; // Indispensable pour utiliser les Coroutines
 
 [RequireComponent(typeof(Rigidbody))]
 public class DeplacementJoueur : MonoBehaviour
 {
-    // On peut retirer la variable "vitesse" d'ici, car on va la chercher dans l'inventaire !
-
     private Rigidbody rb;
     private Animator anim;
     private Vector3 mouvement;
-    
-    // 1. On crée une place pour stocker l'inventaire
     private Inventaire monInventaire;
+
+    // --- NOUVEAU : On ajoute une variable pour bloquer le joueur ---
+    private bool estMort = false;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         anim = GetComponent<Animator>();
-        
-        // 2. On récupère le script Inventaire qui est attaché au Bomberman
         monInventaire = GetComponent<Inventaire>(); 
     }
 
     void Update()
     {
+        // Si le joueur est mort, on ignore ses touches !
+        if (estMort) return;
+
         float axeHorizontal = Input.GetAxisRaw("Horizontal");
         float axeVertical = Input.GetAxisRaw("Vertical");
 
@@ -37,16 +38,70 @@ public class DeplacementJoueur : MonoBehaviour
 
     void FixedUpdate()
     {
-        // 3. On demande à l'inventaire quelle est la vitesse actuelle
-        // (Le "? monInventaire.vitesseJoueur : 5f" est une sécurité au cas où l'inventaire n'existe pas)
+        // Si le joueur est mort, on annule les déplacements physiques
+        if (estMort) return;
+
         float vitesseActuelle = (monInventaire != null) ? monInventaire.vitesseJoueur : 5f;
 
-        // 4. On applique la bonne vitesse au mouvement !
         rb.linearVelocity = mouvement * vitesseActuelle;
 
         if (mouvement != Vector3.zero)
         {
             transform.forward = mouvement;
         }
+    }
+
+    void OnTriggerEnter(Collider autre)
+    {
+        if (autre.CompareTag("Explosion") || autre.CompareTag("Monstre"))
+        {
+            Mourir();
+        }
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Explosion") || collision.gameObject.CompareTag("Monstre"))
+        {
+            Mourir();
+        }
+    }
+
+    void Mourir()
+    {
+        // Si on est déjà mort, on ne relance pas la fonction (pour éviter les bugs si touché 2 fois de suite)
+        if (estMort) return; 
+
+        Debug.Log("Le Bomberman a été éliminé !");
+        
+        // On lance la séquence animée
+        StartCoroutine(SequenceMort());
+    }
+
+    // --- NOUVELLE COROUTINE ---
+   IEnumerator SequenceMort()
+    {
+        estMort = true; 
+        rb.linearVelocity = Vector3.zero;
+
+        if (anim != null) anim.SetTrigger("Mort");
+
+        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(2f);
+
+        // --- ON APPELLE LE SCRIPT JEU ---
+        Jeu scriptJeu = FindFirstObjectByType<Jeu>();
+        
+        if (scriptJeu != null)
+        {
+            scriptJeu.AfficherGameOver(); 
+        }
+        else
+        {
+            Debug.LogError("🚨 ERREUR : Le code ne trouve pas le script Jeu !");
+        }
+        // --------------------------------
+        
+        Destroy(gameObject);
     }
 }

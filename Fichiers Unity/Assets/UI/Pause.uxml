@@ -1,0 +1,8 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="Page" style="flex-grow: 1; flex-direction: row;">
+        <ui:Image source="" scale-mode="ScaleAndCrop" style="position: relative; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.57);">
+            <ui:Button text="Continuer" name="Continuer" style="position: absolute; top: 65%; width: 20%; height: 10%; left: 20%; background-color: rgb(36, 36, 36); color: rgb(255, 255, 255); border-top-left-radius: 15px; border-top-right-radius: 15px; border-bottom-right-radius: 15px; border-bottom-left-radius: 15px;"/>
+            <ui:Button text="Abandonner" name="Abandonner" style="position: absolute; top: 65%; width: 20%; height: 10%; left: auto; right: 20%; color: rgb(255, 255, 255); background-color: rgb(36, 36, 36); border-top-left-radius: 15px; border-top-right-radius: 15px; border-bottom-right-radius: 15px; border-bottom-left-radius: 15px;"/>
+        </ui:Image>
+    </ui:VisualElement>
+</ui:UXML>

@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 5111889106432184942}
   m_Layer: 0
   m_Name: MonstreFeu
-  m_TagString: Untagged
+  m_TagString: Monstre
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -98,10 +98,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8175162f3d47b64c8c8d6636389f65e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monstre
-  vitesse: 1
+  vitesse: 1.5
   calqueMurs:
     serializedVersion: 2
     m_Bits: 64
+  peutDetruireMurs: 0
+  peutTraverserMursDestructibles: 0
+  mouvementAleatoire: 0
+  tempsAvantChangement: 3
+  peutPoserBombes: 0
+  prefabBombe: {fileID: 0}
+  tempsMiniEntreBombes: 4
+  tempsMaxiEntreBombes: 8
+  tempsAttaque: 2
 --- !u!95 &5111889106432184942
 Animator:
   serializedVersion: 7

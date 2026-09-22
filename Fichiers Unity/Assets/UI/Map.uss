@@ -1,0 +1,23 @@
+:root {
+}
+
+
+.unity-progress-bar,
+.unity-progress-bar__container,
+.unity-progress-bar__background {
+    background-color: rgba(0, 0, 0, 0);
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-top-width: 0px;
+    border-bottom-width: 0px;
+    border-color: rgba(0, 0, 0, 0);
+}
+
+
+.unity-progress-bar__progress {
+    background-color: rgba(57, 46, 46, 0);
+    background-image: url("project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=8300712400058098730&guid=049d164634e1b3240876c8a26424f1a7&type=3#check-dash");
+    -unity-background-image-tint-color: rgb(78, 53, 53);
+    background-size: 30px 300%;
+    background-repeat: repeat no-repeat;
+}

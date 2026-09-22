@@ -7,21 +7,25 @@ public class Bombe : MonoBehaviour
 
     [Header("Paramètres de gameplay")]
     public float tempsAvantExplosion = 3f;
-    public int porteeExplosion = 1; // Le nombre de cases que l'explosion va parcourir
-    public LayerMask calqueMurs;    // Permet de cibler uniquement la couche "Murs"
+    public int porteeExplosion = 1; // La portée (sera modifiée par celui qui la pose !)
+    public LayerMask calqueMurs;    
 
-    // --- NOUVEAU : On prépare une variable pour stocker l'inventaire ---
-    private Inventaire inventaireJoueur;
+    // NOUVEAU : On cache cette variable dans l'Inspector car c'est le code qui va la remplir
+    [HideInInspector] public Inventaire inventaireJoueur;
+
+    private Collider monCollider;
 
     void Start()
     {
-        // La bombe cherche l'inventaire du joueur
-        inventaireJoueur = FindObjectOfType<Inventaire>();
+        // /!\ ATTENTION /!\ 
+        // On ne cherche PLUS l'inventaire ici ! C'est le PoseurDeBombe qui va le transmettre.
+        // Si c'est un monstre qui pose la bombe, "inventaireJoueur" restera vide (null), 
+        // ce qui est parfait car le monstre n'a pas d'inventaire !
 
-        // NOUVEAU : La bombe copie la portée actuelle du joueur !
-        if (inventaireJoueur != null)
+        monCollider = GetComponent<Collider>();
+        if (monCollider != null)
         {
-            porteeExplosion = inventaireJoueur.porteeExplosion;
+            monCollider.isTrigger = true; 
         }
 
         // Lance le compte à rebours
@@ -30,59 +34,60 @@ public class Bombe : MonoBehaviour
 
     void Exploser()
     {
-        // --- NOUVEAU : On prévient l'inventaire que cette bombe n'est plus sur la carte ---
+        // Si la bombe appartient au joueur (donc si l'inventaire n'est pas vide), on lui rend sa bombe !
         if (inventaireJoueur != null)
         {
             inventaireJoueur.EnleverBombeDeCarte();
         }
 
-        // 1. Créer l'explosion au centre (à l'emplacement exact de la bombe)
-        Instantiate(prefabExplosion, transform.position, Quaternion.identity);
+        Vector3 positionExplosion = transform.position + new Vector3(0, 0.5f, 0);
+        Instantiate(prefabExplosion, positionExplosion, Quaternion.identity);
 
-        // 2. Propager l'explosion dans les 4 directions cardinales (croix)
-        PropagerExplosion(Vector3.forward); // Devant (Axe Z)
-        PropagerExplosion(Vector3.back);    // Derrière (-Z)
-        PropagerExplosion(Vector3.left);    // Gauche (-X)
-        PropagerExplosion(Vector3.right);   // Droite (X)
+        PropagerExplosion(Vector3.forward);
+        PropagerExplosion(Vector3.back);
+        PropagerExplosion(Vector3.left);
+        PropagerExplosion(Vector3.right);
 
-        // 3. Détruire l'objet bombe (la sphère) de la scène
         Destroy(gameObject);
     }
 
-    void PropagerExplosion(Vector3 direction)
+    void OnTriggerExit(Collider autre)
     {
-        // On fait une boucle pour avancer case par case selon la portée de la bombe
+        if (autre.CompareTag("Player"))
+        {
+            if (monCollider != null)
+            {
+                monCollider.isTrigger = false;
+            }
+        }
+    }
+
+   void PropagerExplosion(Vector3 direction)
+    {
+        // On utilise la boucle avec notre variable porteeExplosion
         for (int i = 1; i <= porteeExplosion; i++)
         {
-            // On calcule la position de la case suivante à vérifier
             Vector3 positionAVerifier = transform.position + (direction * i);
+            Vector3 positionExplosion = positionAVerifier + new Vector3(0, 0.5f, 0);
 
-            // On crée une petite sphère invisible pour détecter ce qui s'y trouve
-            // On limite la recherche au calque "calqueMurs" pour ignorer le sol
             Collider[] objetsTouches = Physics.OverlapSphere(positionAVerifier, 0.4f, calqueMurs);
 
-            // S'il y a quelque chose sur cette case...
             if (objetsTouches.Length > 0)
             {
                 Collider objet = objetsTouches[0];
-
-                // On vérifie si c'est un mur destructible grâce au script qu'on lui a attaché précédemment
                 MurDestructible mur = objet.GetComponent<MurDestructible>();
                 
                 if (mur != null)
                 {
-                    // C'est un mur destructible ! On le détruit et on met une explosion à sa place
                     mur.Detruire();
-                    Instantiate(prefabExplosion, positionAVerifier, Quaternion.identity);
+                    Instantiate(prefabExplosion, positionExplosion, Quaternion.identity);
                 }
                 
-                // Que ce soit un mur destructible ou indestructible, l'explosion s'arrête ici (elle ne traverse pas les murs)
                 break; 
             }
             else
             {
-                // Si la case est complètement vide, on place une explosion et la boucle continue vers la case suivante
-                Instantiate(prefabExplosion, positionAVerifier, Quaternion.identity);
+                Instantiate(prefabExplosion, positionExplosion, Quaternion.identity);
             }
         }
     }

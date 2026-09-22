@@ -8,7 +8,7 @@ public class MurDestructible : MonoBehaviour
     
     // La chance de faire apparaître un bonus (sur 100)
     [Range(0, 100)]
-    public int chanceDeDrop = 80;
+    public int chanceDeDrop = 40;
 
     public void Detruire()
     {

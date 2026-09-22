@@ -6,6 +6,9 @@ TagManager:
   tags:
   - Destructible
   - Indestructible
+  - Explosion
+  - Monstre
+  - Bonus
   layers:
   - Default
   - TransparentFX

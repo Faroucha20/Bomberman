@@ -39,8 +39,22 @@ public class PoseurDeBombe : MonoBehaviour
         // 5. Définir la position finale de la bombe
         Vector3 positionSurGrille = new Vector3(xArrondi, -0.75f, zArrondi); 
 
-        // 6. Instancier (créer) la bombe dans le jeu
-        Instantiate(prefabBombe, positionSurGrille, Quaternion.identity);
+        // 6. Instancier (créer) la bombe et la mémoriser dans une variable
+        GameObject nouvelleBombe = Instantiate(prefabBombe, positionSurGrille, Quaternion.identity);
+
+        // On récupère le script de la bombe pour lui donner notre puissance !
+        Bombe scriptBombe = nouvelleBombe.GetComponent<Bombe>();
+        
+        if (scriptBombe != null && monInventaire != null)
+        {
+            // --- C'EST ICI QUE ÇA CHANGE ---
+            // 1. Le joueur donne SA portée à la bombe
+            scriptBombe.porteeExplosion = monInventaire.porteeExplosion; 
+            
+            // 2. Le joueur prévient la bombe qu'elle LUI appartient pour qu'elle le rembourse
+            scriptBombe.inventaireJoueur = monInventaire; 
+            // --------------------------------
+        }
 
         // 7. Prévenir l'inventaire qu'une bombe vient d'être ajoutée sur la carte
         monInventaire.AjouterBombeSurCarte();

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3a8885449067cd46a1be870e8e74d94, type: 3}
+  m_Name: Niveau3
+  m_EditorClassIdentifier: Assembly-CSharp::ConfigNiveau
+  prefabSol: {fileID: 4471842904690748459, guid: 783a2a324661de34d80830b127097697, type: 3}
+  prefabMurIndestructible: {fileID: 5928019415843997967, guid: bcc79143a90bd36438d0f1fcef5539b0, type: 3}
+  prefabMurDestructible: {fileID: 7338826815185546134, guid: 0c96f0b7bfa8244498c1f9b339313c48, type: 3}
+  nbMursDestructibles: 50
+  monstresAGenerer:
+  - nom: Lezard
+    prefab: {fileID: 7772470989948893069, guid: f21be78f3ce3a0748908f3049a27d1d6, type: 3}
+    quantite: 2
+  - nom: Mouche
+    prefab: {fileID: 4787734284849576031, guid: d2295d09d1fc4c34f968b6a82ec58573, type: 3}
+    quantite: 5

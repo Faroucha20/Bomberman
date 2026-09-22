@@ -82,7 +82,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 471849b162186ea4ba34b24c38ddaaf0, type: 2}
     - target: {fileID: 5014500871186048516, guid: cca7ca7fef4016648a7396ddd83e4967, type: 3}
       propertyPath: m_Name
-      value: npc_csl_00_character_01f_03 Variant
+      value: Bomberman
       objectReference: {fileID: 0}
     - target: {fileID: 5014500871186048516, guid: cca7ca7fef4016648a7396ddd83e4967, type: 3}
       propertyPath: m_TagString
@@ -306,12 +306,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Inventaire
   reserveVitesse: 0
   reserveSac: 0
+  reserveHuile: 0
   vitesseJoueur: 1
   patinsEnJeu: 1
   maxPatins: 4
   bombesEnJeu: 1
   maxBombes: 4
-  reserveHuile: 0
   porteeExplosion: 1
   huileEnJeu: 1
   maxHuile: 4

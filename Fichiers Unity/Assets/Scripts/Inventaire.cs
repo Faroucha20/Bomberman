@@ -33,6 +33,11 @@ public class Inventaire : MonoBehaviour
     public event Action<int> OnHuileChanged;
     public event Action<int, int> OnHuileEnJeuChanged;
 
+    void Awake()
+    {
+        MemoireInventaire.Charger(this);
+    }
+
     public void AjouterBonusVitesse()
     {
         reserveVitesse++;
@@ -110,4 +115,7 @@ public class Inventaire : MonoBehaviour
         bombesActuellementSurCarte--;
         if (bombesActuellementSurCarte < 0) bombesActuellementSurCarte = 0; // Sécurité
     }
+
+    
+
 }
