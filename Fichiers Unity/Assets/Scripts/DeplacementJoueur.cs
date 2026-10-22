@@ -1,8 +1,9 @@
 using UnityEngine;
 using System.Collections; // Indispensable pour utiliser les Coroutines
+using Unity.Netcode;
 
 [RequireComponent(typeof(Rigidbody))]
-public class DeplacementJoueur : MonoBehaviour
+public class DeplacementJoueur : NetworkBehaviour
 {
     private Rigidbody rb;
     private Animator anim;
@@ -23,6 +24,7 @@ public class DeplacementJoueur : MonoBehaviour
     {
         // Si le joueur est mort, on ignore ses touches !
         if (estMort) return;
+        if (!IsOwner) return; // Vérifie si ce script appartient au joueur local
 
         float axeHorizontal = Input.GetAxisRaw("Horizontal");
         float axeVertical = Input.GetAxisRaw("Vertical");
@@ -103,5 +105,32 @@ public class DeplacementJoueur : MonoBehaviour
         // --------------------------------
         
         Destroy(gameObject);
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        // 1. DÉPLACEMENT (Autorité du Serveur)
+        // Le Serveur téléporte ce nouveau joueur à sa place attitrée
+        if (IsServer)
+        {
+            GenerateurMap map = FindFirstObjectByType<GenerateurMap>();
+            if (map != null)
+            {
+                // Netcode s'occupera de synchroniser cette nouvelle position chez tout le monde
+                transform.position = map.ObtenirPointDeDepart(OwnerClientId);
+            }
+        }
+
+        // 2. INTERFACE (Action Locale)
+        // Si c'est notre personnage, on connecte son sac de bombes à l'écran
+        if (IsOwner)
+        {
+            Jeu interfaceUI = FindFirstObjectByType<Jeu>(FindObjectsInactive.Include);
+            if (interfaceUI != null)
+            {
+                // MODIFICATION ICI : On récupère spécifiquement le composant Inventaire
+                interfaceUI.AssignerJoueur(GetComponent<Inventaire>());
+            }
+        }
     }
 }

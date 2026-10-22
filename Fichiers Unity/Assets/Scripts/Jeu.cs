@@ -1,8 +1,10 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections;
+using System;
+using Unity.Netcode;
 
-public class Jeu : MonoBehaviour
+public class Jeu : NetworkBehaviour
 {
     [Header("Victoire")]
     public MenuCarte menuCarte; 
@@ -62,6 +64,19 @@ public class Jeu : MonoBehaviour
         if (boutonSac != null) boutonSac.clicked += SurClicSac;
         if (boutonHuile != null) boutonHuile.clicked += SurClicHuile;
         if (boutonPause != null) boutonPause.clicked += SurClicPause;
+
+        if (joueur != null)
+        {
+            // Si le joueur s'était connecté pendant que l'UI dormait (ou chargeait),
+            // on force la mise à jour des textes maintenant qu'elle est bien réveillée !
+            MAJVitesse(joueur.reserveVitesse);
+            MAJSac(joueur.reserveSac);
+            MAJHuile(joueur.reserveHuile);
+            
+            MAJPatinsEnJeu(joueur.patinsEnJeu, joueur.maxPatins);
+            MAJBombesEnJeu(joueur.bombesEnJeu, joueur.maxBombes);
+            MAJHuileEnJeu(joueur.huileEnJeu, joueur.maxHuile);
+        }
     }
 
     void OnDisable()
@@ -107,14 +122,17 @@ public class Jeu : MonoBehaviour
     private void SurClicPatins()
     {
         if (joueur != null) joueur.UtiliserPatin();
+        Console.WriteLine("Patin utilisé !");
     }
     private void SurClicHuile()
     {
         if (joueur != null) joueur.UtiliserHuile();
+        Console.WriteLine("Huile utilisée !");
     }
     private void SurClicSac()
     {
         if (joueur != null) joueur.UtiliserSac();
+        Console.WriteLine("Sac utilisé !");
     }
 
     // Fonctions pour mettre à jour les labels
@@ -153,6 +171,20 @@ public class Jeu : MonoBehaviour
     {
         joueur = nouveauJoueur;
 
+        // --- NOUVEAU : On force la recherche des éléments UI immédiatement ---
+        // Cela garantit que les labels ne sont pas nuls même si OnEnable a été pris de vitesse.
+        var root = GetComponent<UIDocument>().rootVisualElement;
+        if (root != null)
+        {
+            if (labelVitesse == null) labelVitesse = root.Q<Label>("LabelVitesseRes");
+            if (labelSac == null) labelSac = root.Q<Label>("LabelSacRes");
+            if (labelHuileRes == null) labelHuileRes = root.Q<Label>("LabelHuileRes");
+            
+            if (labelPatinsEnJeu == null) labelPatinsEnJeu = root.Q<Label>("PatinsEnJeu");
+            if (labelBombesEnJeu == null) labelBombesEnJeu = root.Q<Label>("BombesEnJeu");
+            if (labelHuileEnJeu == null) labelHuileEnJeu = root.Q<Label>("HuileEnJeu");
+        }
+
         // On s'abonne aux événements du nouveau joueur
         joueur.OnVitesseChanged += MAJVitesse;
         joueur.OnSacChanged += MAJSac;
@@ -160,6 +192,8 @@ public class Jeu : MonoBehaviour
         joueur.OnPatinsEnJeuChanged += MAJPatinsEnJeu;
         joueur.OnBombesEnJeuChanged += MAJBombesEnJeu;
         joueur.OnHuileEnJeuChanged += MAJHuileEnJeu;
+
+        Debug.Log($"Connexion UI réussie. Bombes du joueur : {joueur.reserveSac}");
 
         // On met à jour les textes immédiatement avec ses valeurs de départ
         MAJVitesse(joueur.reserveVitesse);

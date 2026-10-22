@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 public class MenuAccueil : MonoBehaviour
 {
     [Header("Écran Suivant")]
-    public GameObject ecranMap;
+    public GameObject ecranMode;
 
     void OnEnable()
     {
@@ -22,21 +22,21 @@ public class MenuAccueil : MonoBehaviour
         // On vérifie si n'importe quelle touche du clavier ou de la souris est pressée
         if (Input.anyKeyDown)
         {
-            PasserALaCarte();
+            PasserPageMode();
         }
     }
 
     private void SurClicEcran(PointerDownEvent evt)
     {
-        PasserALaCarte();
+        PasserPageMode();
     }
 
-    private void PasserALaCarte()
+    private void PasserPageMode()
     {
         // 1. On allume le GameObject de la Map
-        if (ecranMap != null)
+        if (ecranMode != null)
         {
-            ecranMap.SetActive(true);
+            ecranMode.SetActive(true);
         }
 
         // 2. On éteint complètement cet écran d'accueil

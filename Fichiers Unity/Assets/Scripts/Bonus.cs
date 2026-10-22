@@ -1,6 +1,8 @@
 using UnityEngine;
+using Unity.Netcode; // --- NOUVEAU : Import de la librairie réseau ---
 
-public class Bonus : MonoBehaviour
+// --- MODIFICATION : On hérite de NetworkBehaviour ---
+public class Bonus : NetworkBehaviour
 {
     // On crée une liste des types de bonus possibles
     public enum TypeDeBonus { Vitesse, Sac, Huile }
@@ -13,27 +15,47 @@ public class Bonus : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Inventaire inventaire = other.GetComponent<Inventaire>();
-            if (inventaire != null)
+            // --- SÉCURITÉ RÉSEAU ---
+            // On s'assure que c'est bien NOTRE personnage local qui marche sur le bonus
+            NetworkObject joueurNetObj = other.GetComponent<NetworkObject>();
+            
+            if (joueurNetObj != null && joueurNetObj.IsOwner)
             {
-                // On vérifie quel est le type sélectionné dans le menu déroulant
-                switch (typeBonus)
+                Inventaire inventaire = other.GetComponent<Inventaire>();
+                if (inventaire != null)
                 {
-                    case TypeDeBonus.Vitesse:
-                        inventaire.AjouterBonusVitesse();
-                        break;
-                    
-                    case TypeDeBonus.Sac:
-                        inventaire.AjouterBonusSac();
-                        break;
-                    
-                    case TypeDeBonus.Huile:
-                        inventaire.AjouterBonusHuile(); // <-- La nouvelle fonction !
-                        break;
-                }
+                    // On vérifie quel est le type sélectionné dans le menu déroulant
+                    switch (typeBonus)
+                    {
+                        case TypeDeBonus.Vitesse:
+                            inventaire.AjouterBonusVitesse();
+                            break;
+                        
+                        case TypeDeBonus.Sac:
+                            inventaire.AjouterBonusSac();
+                            break;
+                        
+                        case TypeDeBonus.Huile:
+                            inventaire.AjouterBonusHuile();
+                            break;
+                    }
 
-                Destroy(gameObject); // Fait disparaître le bonus de la carte
+                    // --- MODIFICATION : On demande au serveur de le détruire ---
+                    DemanderDestructionServerRpc();
+                }
             }
+        }
+    }
+
+    // --- NOUVELLE FONCTION ---
+    // (RequireOwnership = false) donne l'autorisation aux clients de déclencher cette requête
+    [ServerRpc(RequireOwnership = false)]
+    private void DemanderDestructionServerRpc()
+    {
+        // Le serveur exécute le Despawn pour faire disparaître l'objet chez tous les joueurs
+        if (NetworkObject != null && NetworkObject.IsSpawned)
+        {
+            NetworkObject.Despawn();
         }
     }
 }

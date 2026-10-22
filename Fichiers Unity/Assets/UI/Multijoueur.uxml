@@ -1,0 +1,17 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="Page" style="flex-grow: 1; flex-direction: row; background-color: rgb(79, 96, 107);">
+        <ui:VisualElement name="Mode_Solo" style="flex-grow: 1; justify-content: center; align-items: center; width: 50%;">
+            <ui:Button text="" name="Host" style="background-color: rgb(61, 92, 180); border-left-color: rgb(122, 122, 122); border-right-color: rgb(122, 122, 122); border-top-color: rgb(122, 122, 122); border-bottom-color: rgb(122, 122, 122); border-top-width: 2px; border-right-width: 2px; border-bottom-width: 2px; border-left-width: 2px; border-top-left-radius: 15px; border-top-right-radius: 15px; border-bottom-right-radius: 15px; border-bottom-left-radius: 15px; align-items: center; height: 60%;">
+                <ui:Label text="Créer un combat" style="color: rgb(255, 255, 255); -unity-font-style: bold; font-size: 30%; top: 0%; height: 40%; -unity-text-align: middle-left;"/>
+                <ui:Image source="project://database/Assets/Images/1bombe.png?fileID=2800000&amp;guid=f9aa33659c5a08d45949365353467859&amp;type=3#1bombe" scale-mode="ScaleToFit" style="rotate: 24deg; height: 60%; bottom: 7%;"/>
+            </ui:Button>
+        </ui:VisualElement>
+        <ui:VisualElement name="Mode_Multijoueur" style="flex-grow: 1; align-items: center; justify-content: center; width: 50%;">
+            <ui:Button text="" name="Client" style="border-left-color: rgb(122, 122, 122); border-right-color: rgb(122, 122, 122); border-top-color: rgb(122, 122, 122); border-bottom-color: rgb(122, 122, 122); background-color: rgb(180, 61, 61); border-top-width: 2px; border-right-width: 2px; border-bottom-width: 2px; border-left-width: 2px; border-top-left-radius: 15px; border-top-right-radius: 15px; border-bottom-right-radius: 15px; border-bottom-left-radius: 15px; height: 60%; align-items: center;">
+                <ui:Label text="Rejoindre un combat" style="color: rgb(255, 255, 255); -unity-font-style: bold; font-size: 30%; top: 0%; height: 40%; -unity-text-align: middle-center;"/>
+                <ui:Image source="project://database/Assets/Images/2bombes.png?fileID=2800000&amp;guid=a695beb91fb21fa4ab709fdfa7190009&amp;type=3#2bombes" scale-mode="ScaleAndCrop" uv="0,0,1,1.24" style="height: 54%; width: 85%; bottom: 7%;"/>
+            </ui:Button>
+        </ui:VisualElement>
+        <ui:Button text="Commandes" name="Commandes" style="position: absolute; bottom: 5%; left: 40%; right: auto; width: 20%; height: 10%; border-top-left-radius: 15px; border-top-right-radius: 15px; border-bottom-right-radius: 15px; border-bottom-left-radius: 15px; background-color: rgb(51, 51, 51); color: rgb(255, 255, 255); font-size: 20%; -unity-font-style: bold;"/>
+    </ui:VisualElement>
+</ui:UXML>

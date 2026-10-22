@@ -6,12 +6,17 @@ public class MenuPause : MonoBehaviour
     [Header("Écrans à gérer")]
     public GameObject ecranJeu;
     public GameObject ecranMap;
+    public GameObject ecranCommande;
+
 
     [Header("Le Générateur (pour nettoyer)")]
     public GenerateurMap generateur;
 
     private Button boutonContinuer;
     private Button boutonAbandonner;
+    private Button boutonQuitter;
+    private Button boutonCommande;
+
 
     void OnEnable()
     {
@@ -20,15 +25,25 @@ public class MenuPause : MonoBehaviour
         // ⚠️ Vérifie que ces noms correspondent exactement à ton UI Builder !
         boutonContinuer = root.Q<Button>("Continuer");
         boutonAbandonner = root.Q<Button>("Abandonner");
+        boutonQuitter = root.Q<Button>("Quitter");
+        boutonCommande = root.Q<Button>("Commandes");
+
+
 
         if (boutonContinuer != null) boutonContinuer.clicked += SurClicContinuer;
         if (boutonAbandonner != null) boutonAbandonner.clicked += SurClicAbandonner;
+        if (boutonQuitter != null) boutonQuitter.clicked += SurClicQuitter;
+        if (boutonCommande != null) boutonCommande.clicked += SurClicCommande;
+
     }
 
     void OnDisable()
     {
         if (boutonContinuer != null) boutonContinuer.clicked -= SurClicContinuer;
         if (boutonAbandonner != null) boutonAbandonner.clicked -= SurClicAbandonner;
+        if (boutonQuitter != null) boutonQuitter.clicked -= SurClicQuitter;
+        if (boutonCommande != null) boutonCommande.clicked -= SurClicCommande;
+
     }
 
     private void SurClicContinuer()
@@ -65,5 +80,24 @@ public class MenuPause : MonoBehaviour
 
         // 5. On éteint cet écran de Pause
         gameObject.SetActive(false);
+    }
+
+    private void SurClicQuitter()
+    {
+        Debug.Log("Fermeture du jeu !");
+        
+        // Cette ligne fermera le vrai jeu une fois exporté
+        Application.Quit();
+
+        // Cette petite commande spéciale permet d'arrêter le mode "Play" directement dans l'éditeur Unity
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+        #endif
+    }
+
+        private void SurClicCommande()
+    {
+        // 2. On affiche la page de Commande
+        ecranCommande.SetActive(true);
     }
 }

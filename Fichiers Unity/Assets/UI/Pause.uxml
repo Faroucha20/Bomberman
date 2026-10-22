@@ -1,8 +1,10 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:VisualElement name="Page" style="flex-grow: 1; flex-direction: row;">
-        <ui:Image source="" scale-mode="ScaleAndCrop" style="position: relative; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.57);">
-            <ui:Button text="Continuer" name="Continuer" style="position: absolute; top: 65%; width: 20%; height: 10%; left: 20%; background-color: rgb(36, 36, 36); color: rgb(255, 255, 255); border-top-left-radius: 15px; border-top-right-radius: 15px; border-bottom-right-radius: 15px; border-bottom-left-radius: 15px;"/>
-            <ui:Button text="Abandonner" name="Abandonner" style="position: absolute; top: 65%; width: 20%; height: 10%; left: auto; right: 20%; color: rgb(255, 255, 255); background-color: rgb(36, 36, 36); border-top-left-radius: 15px; border-top-right-radius: 15px; border-bottom-right-radius: 15px; border-bottom-left-radius: 15px;"/>
-        </ui:Image>
+    <ui:VisualElement name="Page" style="flex-grow: 1; flex-direction: row; background-color: rgba(0, 0, 0, 0.9); align-items: center; justify-content: center;">
+        <ui:VisualElement style="flex-grow: 0; width: 50%; height: 50%; color: rgb(255, 255, 255); background-color: rgb(151, 142, 142); border-top-left-radius: 20px; border-top-right-radius: 20px; border-bottom-right-radius: 20px; border-bottom-left-radius: 20px;">
+            <ui:Button text="Commandes" name="Commandes" style="position: absolute; top: 15%; width: 35%; height: 20%; left: auto; right: 33%; color: rgb(255, 255, 255); background-color: rgb(36, 36, 36); border-top-left-radius: 15px; border-top-right-radius: 15px; border-bottom-right-radius: 15px; border-bottom-left-radius: 15px; font-size: 25%;"/>
+            <ui:Button text="Abandonner le niveau" name="Abandonner" style="position: absolute; top: 40%; width: 35%; height: 20%; left: auto; right: 3%; color: rgb(255, 255, 255); background-color: rgb(36, 36, 36); border-top-left-radius: 15px; border-top-right-radius: 15px; border-bottom-right-radius: 15px; border-bottom-left-radius: 15px; font-size: 25%;"/>
+            <ui:Button text="Quitter je jeu" name="Quitter" style="position: absolute; top: auto; width: 35%; height: 20%; left: auto; right: 33%; color: rgb(255, 255, 255); background-color: rgb(36, 36, 36); border-top-left-radius: 15px; border-top-right-radius: 15px; border-bottom-right-radius: 15px; border-bottom-left-radius: 15px; font-size: 25%; bottom: 15%;"/>
+            <ui:Button text="Continuer" name="Continuer" style="position: absolute; top: 40%; width: 35%; height: 20%; left: 3%; background-color: rgb(36, 36, 36); color: rgb(255, 255, 255); border-top-left-radius: 15px; border-top-right-radius: 15px; border-bottom-right-radius: 15px; border-bottom-left-radius: 15px; font-size: 25%;"/>
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

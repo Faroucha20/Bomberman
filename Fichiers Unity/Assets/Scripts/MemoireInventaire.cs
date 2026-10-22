@@ -48,8 +48,8 @@ public static class MemoireInventaire
     {
         // On remet uniquement les statistiques "en jeu" à leurs valeurs de départ
         // (⚠️ Modifie ces chiffres si tes valeurs de base sont différentes dans ton jeu)
-        memVitesseJoueur = 5f; // Ta vitesse de base
-        memPatinsEnJeu = 0;    // Les bonus de vitesse activés retombent à zéro
+        memVitesseJoueur = 1f;
+        memPatinsEnJeu = 1;
         
         memBombesEnJeu = 1;    // On redémarre avec 1 seule bombe posable
         memPorteeExplosion = 1; // La portée redescend à 1 case

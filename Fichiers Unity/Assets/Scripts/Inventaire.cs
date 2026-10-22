@@ -38,6 +38,13 @@ public class Inventaire : MonoBehaviour
         MemoireInventaire.Charger(this);
     }
 
+    void Start()
+    {
+        // Dès que le script démarre (après avoir chargé la mémoire dans Awake),
+        // on force l'interface à lire les vraies valeurs.
+        RafraichirTouteLInterface();
+    }
+
     public void AjouterBonusVitesse()
     {
         reserveVitesse++;
@@ -116,6 +123,17 @@ public class Inventaire : MonoBehaviour
         if (bombesActuellementSurCarte < 0) bombesActuellementSurCarte = 0; // Sécurité
     }
 
-    
+    // À ajouter dans la classe Inventaire
+    public void RafraichirTouteLInterface()
+    {
+        // On déclenche manuellement tous les événements pour forcer l'UI à se mettre à jour
+        OnVitesseChanged?.Invoke(reserveVitesse);
+        OnSacChanged?.Invoke(reserveSac);
+        OnHuileChanged?.Invoke(reserveHuile);
+        
+        OnPatinsEnJeuChanged?.Invoke(patinsEnJeu, maxPatins);
+        OnBombesEnJeuChanged?.Invoke(bombesEnJeu, maxBombes);
+        OnHuileEnJeuChanged?.Invoke(huileEnJeu, maxHuile);
+    }
 
 }

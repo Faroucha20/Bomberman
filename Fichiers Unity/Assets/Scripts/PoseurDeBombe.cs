@@ -1,6 +1,8 @@
 using UnityEngine;
+using Unity.Netcode; // --- NOUVEAU : Import de la librairie réseau ---
 
-public class PoseurDeBombe : MonoBehaviour
+// --- MODIFICATION : On hérite de NetworkBehaviour ---
+public class PoseurDeBombe : NetworkBehaviour
 {
     [Header("Paramètres")]
     public GameObject prefabBombe; // Le modèle de la bombe à faire apparaître
@@ -10,53 +12,63 @@ public class PoseurDeBombe : MonoBehaviour
 
     void Start()
     {
-        // Au démarrage, on récupère le script Inventaire qui est sur le même objet (le Bomberman)
+        // Au démarrage, on récupère le script Inventaire qui est sur le même objet
         monInventaire = GetComponent<Inventaire>();
     }
 
     void Update()
     {
+        // --- SÉCURITÉ RÉSEAU ---
+        // On ne lit la touche Espace QUE si ce script appartient à NOTRE personnage local.
+        if (!IsOwner) return;
+
         // 1. On écoute la touche Espace
         if (Input.GetKeyDown(KeyCode.Space))
         {
             // 2. On demande la permission à l'inventaire avant de poser
             if (monInventaire != null && monInventaire.PeutPoserBombe())
             {
-                PoserUneBombe();
+                // 3. Récupérer la position exacte du joueur
+                Vector3 positionJoueur = transform.position;
+
+                // 4. Calculer le centre de la case (Arrondir les positions X et Z)
+                float xArrondi = Mathf.Round(positionJoueur.x);
+                float zArrondi = Mathf.Round(positionJoueur.z);
+
+                // 5. Définir la position finale de la bombe
+                Vector3 positionSurGrille = new Vector3(xArrondi, -0.75f, zArrondi); 
+
+                // 6. On prévient notre inventaire local qu'on a posé une bombe
+                monInventaire.AjouterBombeSurCarte();
+
+                // 7. On demande poliment au Serveur de faire apparaître la bombe pour tout le monde
+                PoserUneBombeServerRpc(positionSurGrille, monInventaire.porteeExplosion);
             }
         }
     }
 
-    void PoserUneBombe()
+    // --- NOUVELLE FONCTION RÉSEAU ---
+    // Cette fonction ne s'exécute QUE sur le Serveur
+    [ServerRpc]
+    void PoserUneBombeServerRpc(Vector3 positionSurGrille, int portee)
     {
-        // 3. Récupérer la position exacte du joueur
-        Vector3 positionJoueur = transform.position;
-
-        // 4. Calculer le centre de la case (Arrondir les positions X et Z)
-        float xArrondi = Mathf.Round(positionJoueur.x);
-        float zArrondi = Mathf.Round(positionJoueur.z);
-
-        // 5. Définir la position finale de la bombe
-        Vector3 positionSurGrille = new Vector3(xArrondi, -0.75f, zArrondi); 
-
-        // 6. Instancier (créer) la bombe et la mémoriser dans une variable
+        // Le Serveur crée la bombe
         GameObject nouvelleBombe = Instantiate(prefabBombe, positionSurGrille, Quaternion.identity);
 
-        // On récupère le script de la bombe pour lui donner notre puissance !
+        // On configure la bombe
         Bombe scriptBombe = nouvelleBombe.GetComponent<Bombe>();
-        
-        if (scriptBombe != null && monInventaire != null)
+        if (scriptBombe != null)
         {
-            // --- C'EST ICI QUE ÇA CHANGE ---
-            // 1. Le joueur donne SA portée à la bombe
-            scriptBombe.porteeExplosion = monInventaire.porteeExplosion; 
-            
-            // 2. Le joueur prévient la bombe qu'elle LUI appartient pour qu'elle le rembourse
+            scriptBombe.porteeExplosion = portee; 
+            // Le serveur relie la bombe à l'inventaire du joueur (côté serveur) pour le remboursement
             scriptBombe.inventaireJoueur = monInventaire; 
-            // --------------------------------
         }
 
-        // 7. Prévenir l'inventaire qu'une bombe vient d'être ajoutée sur la carte
-        monInventaire.AjouterBombeSurCarte();
+        // Le Serveur annonce la bombe à tout le réseau
+        NetworkObject netObj = nouvelleBombe.GetComponent<NetworkObject>();
+        if (netObj != null)
+        {
+            netObj.Spawn();
+        }
     }
 }

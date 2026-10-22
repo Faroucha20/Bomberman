@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
 [System.Serializable]
 public struct ConfigMonstre
@@ -9,8 +10,12 @@ public struct ConfigMonstre
     public int quantite;
 }
 
-public class GenerateurMap : MonoBehaviour
+public class GenerateurMap : NetworkBehaviour
 {
+    // --- NOUVEAU : Option pour basculer le comportement de la map ---
+    [Header("Paramètres de Jeu")]
+    public bool modeMultijoueur = false;
+
     [Header("Dimensions de la Map")]
     public int largeur = 15;
     public int hauteur = 13;
@@ -25,28 +30,36 @@ public class GenerateurMap : MonoBehaviour
     public int nbMursDestructibles = 30;
     public ConfigMonstre[] monstresAGenerer;
 
-    // On retire le Start() car la carte ne se génère plus toute seule au lancement !
+    private List<NetworkObject> objetsGeneresSurLeReseau = new List<NetworkObject>();
 
-    // --- NOUVELLE FONCTION : Appelée par le menu pour lancer un niveau ---
     public void LancerNouveauNiveau(ConfigNiveau nouvelleConfig)
     {
+        if (!IsServer) return;
+
         NettoyerAncienneMap();
 
-        // On copie les paramètres de la "fiche" choisie
         prefabSol = nouvelleConfig.prefabSol;
         prefabMurIndestructible = nouvelleConfig.prefabMurIndestructible;
         prefabMurDestructible = nouvelleConfig.prefabMurDestructible;
         nbMursDestructibles = nouvelleConfig.nbMursDestructibles;
         monstresAGenerer = nouvelleConfig.monstresAGenerer;
 
-        // On lance la création !
         GenererLaMap();
     }
 
-    // --- NOUVELLE FONCTION : Supprime tout avant de recréer ---
     public void NettoyerAncienneMap()
     {
-        // On détruit tous les enfants de ce GameObject (les anciens murs, monstres, joueur...)
+        if (!IsServer) return;
+
+        foreach (NetworkObject netObj in objetsGeneresSurLeReseau)
+        {
+            if (netObj != null && netObj.IsSpawned)
+            {
+                netObj.Despawn(); 
+            }
+        }
+        objetsGeneresSurLeReseau.Clear();
+        
         foreach (Transform enfant in transform)
         {
             Destroy(enfant.gameObject);
@@ -61,38 +74,45 @@ public class GenerateurMap : MonoBehaviour
         List<Vector3> casesLibres = new List<Vector3>();
 
         // ÉTAPE 1 : GÉNÉRATION DE LA STRUCTURE FIXE
-        // --- MODIFICATION ICI : On étend la boucle de -3 à +3 pour créer la bordure ! ---
-        for (int x = -3; x < largeur + 3; x++)
+        for (int x = -5; x < largeur + 5; x++)
         {
             for (int z = -3; z < hauteur + 3; z++)
             {
                 Vector3 position = new Vector3(x, 0f, z);
 
-                // On génère le sol partout, même sous la nouvelle grosse bordure
                 if (prefabSol != null)
                 {
-                    Instantiate(prefabSol, position - new Vector3(0, 0.5f, 0), Quaternion.identity, transform);
+                    InstancierSurReseau(prefabSol, position - new Vector3(0, 0.5f, 0));
                 }
 
-                // --- NOUVEAU : Si la case est en dehors de la zone de jeu (les fameuses 3 cases) ---
                 if (x < 0 || x >= largeur || z < 0 || z >= hauteur)
                 {
-                    Instantiate(prefabMurIndestructible, position, Quaternion.identity, transform);
+                    InstancierSurReseau(prefabMurIndestructible, position);
                 }
-                // --- Le reste de ton code original reste intact ! ---
                 else if (x == 0 || x == largeur - 1 || z == 0 || z == hauteur - 1)
                 {
-                    Instantiate(prefabMurIndestructible, position, Quaternion.identity, transform);
+                    InstancierSurReseau(prefabMurIndestructible, position);
                 }
                 else if (x % 2 == 0 && z % 2 == 0)
                 {
-                    Instantiate(prefabMurIndestructible, position, Quaternion.identity, transform);
+                    InstancierSurReseau(prefabMurIndestructible, position);
                 }
                 else
                 {
+                    // --- MODIFICATION : SAFE ZONES DYNAMIQUES ---
+                    // Joueur 1 (Haut-Gauche) toujours protégé
                     bool estSafeZone = (x == 1 && z == hauteur - 2) || 
                                        (x == 2 && z == hauteur - 2) || 
                                        (x == 1 && z == hauteur - 3);   
+
+                    // Si on est en multijoueur, on protège les 3 autres coins
+                    if (modeMultijoueur)
+                    {
+                        estSafeZone = estSafeZone || 
+                            (x == largeur - 2 && z == 1) || (x == largeur - 3 && z == 1) || (x == largeur - 2 && z == 2) || // Bas-Droite
+                            (x == largeur - 2 && z == hauteur - 2) || (x == largeur - 3 && z == hauteur - 2) || (x == largeur - 2 && z == hauteur - 3) || // Haut-Droite
+                            (x == 1 && z == 1) || (x == 2 && z == 1) || (x == 1 && z == 2); // Bas-Gauche
+                    }
 
                     if (!estSafeZone)
                     {
@@ -102,32 +122,42 @@ public class GenerateurMap : MonoBehaviour
             }
         }
 
-        // ÉTAPE 2 : APPARITION DU JOUEUR (Intact)
-        Vector3 positionJoueur = new Vector3(1, -0.5f, hauteur - 2);
-        GameObject joueurCree = Instantiate(prefabBomberman, positionJoueur, Quaternion.identity, transform);
-
+        // ÉTAPE 2 : APPARITION DU JOUEUR (Déléguée au NetworkManager)
         Jeu interfaceUI = FindFirstObjectByType<Jeu>();
         if (interfaceUI != null)
         {
-            interfaceUI.AssignerJoueur(joueurCree.GetComponent<Inventaire>());
             interfaceUI.DemarrerDetectionVictoire();
         }
 
+        // --- MODIFICATION : ÉTAPE 3 : BARRICADES DE SÉCURITÉ ---
+        List<Vector3> barricades = new List<Vector3>();
         
+        // Joueur 1 (Haut-Gauche)
+        barricades.Add(new Vector3(3, 0f, hauteur - 2));
+        barricades.Add(new Vector3(1, 0f, hauteur - 4));
 
-        // ÉTAPE 3 : BARRICADES DE SÉCURITÉ (Intact)
-        Vector3 barricadeDroite = new Vector3(3, 0f, hauteur - 2);
-        Vector3 barricadeBas = new Vector3(1, 0f, hauteur - 4);
+        if (modeMultijoueur)
+        {
+            // Joueur 2 (Bas-Droite)
+            barricades.Add(new Vector3(largeur - 4, 0f, 1));
+            barricades.Add(new Vector3(largeur - 2, 0f, 3));
+            // Joueur 3 (Haut-Droite)
+            barricades.Add(new Vector3(largeur - 4, 0f, hauteur - 2));
+            barricades.Add(new Vector3(largeur - 2, 0f, hauteur - 4));
+            // Joueur 4 (Bas-Gauche)
+            barricades.Add(new Vector3(3, 0f, 1));
+            barricades.Add(new Vector3(1, 0f, 3));
+        }
 
-        Instantiate(prefabMurDestructible, barricadeDroite, Quaternion.identity, transform);
-        Instantiate(prefabMurDestructible, barricadeBas, Quaternion.identity, transform);
+        foreach (Vector3 pos in barricades)
+        {
+            InstancierSurReseau(prefabMurDestructible, pos);
+            casesLibres.Remove(pos);
+        }
 
-        casesLibres.Remove(barricadeDroite);
-        casesLibres.Remove(barricadeBas);
+        int mursRestantsAPlacer = nbMursDestructibles - barricades.Count;
 
-        int mursRestantsAPlacer = nbMursDestructibles - 2;
-
-        // ÉTAPE 4 : PLACEMENT ALÉATOIRE DES MURS DESTRUCTIBLES (Intact)
+        // ÉTAPE 4 : PLACEMENT ALÉATOIRE DES MURS DESTRUCTIBLES
         for (int i = 0; i < mursRestantsAPlacer; i++)
         {
             if (casesLibres.Count == 0) break; 
@@ -135,45 +165,92 @@ public class GenerateurMap : MonoBehaviour
             int indexAleatoire = Random.Range(0, casesLibres.Count);
             Vector3 positionChoisie = casesLibres[indexAleatoire];
 
-            Instantiate(prefabMurDestructible, positionChoisie, Quaternion.identity, transform);
+            InstancierSurReseau(prefabMurDestructible, positionChoisie);
             casesLibres.RemoveAt(indexAleatoire); 
         }
 
-        // ÉTAPE 5 : PLACEMENT ALÉATOIRE DES MONSTRES (Intact)
-        foreach (ConfigMonstre config in monstresAGenerer)
-        {
-            for (int i = 0; i < config.quantite; i++)
+        // ÉTAPE 5 : PLACEMENT ALÉATOIRE DES MONSTRES
+        if (!modeMultijoueur) {
+            foreach (ConfigMonstre config in monstresAGenerer)
             {
-                if (casesLibres.Count == 0) break;
+                for (int i = 0; i < config.quantite; i++)
+                {
+                    if (casesLibres.Count == 0) break;
 
-                int indexAleatoire = Random.Range(0, casesLibres.Count);
-                Vector3 positionChoisie = casesLibres[indexAleatoire];
-                Vector3 positionMonstre = new Vector3(positionChoisie.x, positionChoisie.y - 0.5f, positionChoisie.z);
+                    int indexAleatoire = Random.Range(0, casesLibres.Count);
+                    Vector3 positionChoisie = casesLibres[indexAleatoire];
+                    Vector3 positionMonstre = new Vector3(positionChoisie.x, positionChoisie.y - 0.5f, positionChoisie.z);
 
-                Instantiate(config.prefab, positionMonstre, Quaternion.identity, transform);
-                casesLibres.RemoveAt(indexAleatoire);
+                    InstancierSurReseau(config.prefab, positionMonstre);
+                    casesLibres.RemoveAt(indexAleatoire);
+                }
             }
         }
     }
 
     public void NettoyerPlateau()
     {
-        // 1. On détruit tous les blocs (murs, sols)
-        foreach (Transform enfant in transform)
+        if (!IsServer) return;
+
+        NettoyerAncienneMap();
+
+        GameObject[] monstres = GameObject.FindGameObjectsWithTag("Monstre");
+        foreach (GameObject m in monstres) 
         {
-            Destroy(enfant.gameObject);
+            NetworkObject netObj = m.GetComponent<NetworkObject>();
+            if (netObj != null && netObj.IsSpawned) netObj.Despawn();
+            else Destroy(m);
         }
 
-        // 2. On nettoie les monstres
-        GameObject[] monstres = GameObject.FindGameObjectsWithTag("Monstre");
-        foreach (GameObject m in monstres) Destroy(m);
-
-        // 3. On nettoie les explosions
         GameObject[] explosions = GameObject.FindGameObjectsWithTag("Explosion");
-        foreach (GameObject e in explosions) Destroy(e);
+        foreach (GameObject e in explosions) 
+        {
+            NetworkObject netObj = e.GetComponent<NetworkObject>();
+            if (netObj != null && netObj.IsSpawned) netObj.Despawn();
+            else Destroy(e);
+        }
 
-        // --- NOUVEAU : On nettoie les bonus restés au sol ---
         GameObject[] bonus = GameObject.FindGameObjectsWithTag("Bonus");
-        foreach (GameObject b in bonus) Destroy(b);
+        foreach (GameObject b in bonus) 
+        {
+            NetworkObject netObj = b.GetComponent<NetworkObject>();
+            if (netObj != null && netObj.IsSpawned) netObj.Despawn();
+            else Destroy(b);
+        }
+    }
+
+    private void InstancierSurReseau(GameObject prefab, Vector3 position)
+    {
+        if (prefab == null) return;
+
+        GameObject nouvelObjet = Instantiate(prefab, position, Quaternion.identity);
+
+        NetworkObject netObj = nouvelObjet.GetComponent<NetworkObject>();
+        if (netObj != null)
+        {
+            netObj.Spawn(); 
+            objetsGeneresSurLeReseau.Add(netObj);
+        }
+        else
+        {
+            Debug.LogWarning($"Attention, le prefab {prefab.name} n'a pas de NetworkObject !");
+        }
+    }
+
+    public Vector3 ObtenirPointDeDepart(ulong clientId)
+    {
+        Vector3 coinHautGauche = new Vector3(1, -0.5f, hauteur - 2);
+        Vector3 coinBasDroite = new Vector3(largeur - 2, -0.5f, 1);
+        Vector3 coinHautDroite = new Vector3(largeur - 2, -0.5f, hauteur - 2);
+        Vector3 coinBasGauche = new Vector3(1, -0.5f, 1);
+
+        switch (clientId % 4) 
+        {
+            case 0: return coinHautGauche;
+            case 1: return coinBasDroite;
+            case 2: return coinHautDroite;
+            case 3: return coinBasGauche;
+            default: return coinHautGauche;
+        }
     }
 }
