@@ -37,7 +37,7 @@ public class MenuMultijoueur : NetworkBehaviour
     private TextField champPseudo;
     private TextField champCode;
     private Button boutonRejoindre;
-    private Label texteAttente;
+private VisualElement boiteAttente;
 
     // Dictionnaire pour stocker les pseudos des joueurs connectés (Uniquement utilisé par le Serveur)
     private Dictionary<ulong, string> joueursConnectes = new Dictionary<ulong, string>();
@@ -77,7 +77,9 @@ public class MenuMultijoueur : NetworkBehaviour
         champPseudo = root.Q<TextField>("ChampPseudo");
         champCode = root.Q<TextField>("ChampCode");
         boutonRejoindre = root.Q<Button>("BoutonRejoindre");
-        texteAttente = root.Q<Label>("Attente");
+        boiteAttente = root.Q<VisualElement>("Attente");
+
+        if (boiteAttente != null) boiteAttente.style.display = DisplayStyle.None; // On le cache par sécurité au démarrage
 
         // Assignation des clics
         if (boutonMenuHost != null) boutonMenuHost.clicked += OuvrirLobbyHost;
@@ -139,25 +141,32 @@ public class MenuMultijoueur : NetworkBehaviour
 
         if (string.IsNullOrEmpty(pseudo) || string.IsNullOrEmpty(code)) return;
 
-        // Cacher le bouton et afficher le texte d'attente
-        boutonRejoindre.style.display = DisplayStyle.None;
-        texteAttente.style.display = DisplayStyle.Flex;
-        texteAttente.text = "Connexion en cours...";
+        // On cache simplement le bouton pour éviter que le joueur clique plusieurs fois pendant le chargement
+        if (boutonRejoindre != null) boutonRejoindre.style.display = DisplayStyle.None;
 
         try {
             JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(code);
-            RelayServerData relayServerData = joinAllocation.ToRelayServerData("dtls");
+            RelayServerData relayServerData = joinAllocation.ToRelayServerData("dtls"); // Ou "wss" si le réseau bloque
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
 
-            // ⚠️ C'est ici qu'on attache le Pseudo au "billet d'entrée" du joueur
+            // On attache le Pseudo au billet d'entrée
             NetworkManager.Singleton.NetworkConfig.ConnectionData = Encoding.UTF8.GetBytes(pseudo);
-
             NetworkManager.Singleton.StartClient();
         }
         catch (System.Exception e) { 
             Debug.LogError("Erreur Client: " + e.Message);
-            texteAttente.text = "Erreur de code !";
-            boutonRejoindre.style.display = DisplayStyle.Flex;
+            // Si la connexion échoue (mauvais code), on réaffiche le bouton pour réessayer
+            if (boutonRejoindre != null) boutonRejoindre.style.display = DisplayStyle.Flex;
+        }
+    }
+
+    private void SurJoueurConnecte(ulong clientId)
+    {
+        // Si je suis le Client et que le Serveur vient de m'accepter officiellement
+        if (!IsServer && clientId == NetworkManager.Singleton.LocalClientId)
+        {
+            // J'affiche le bel encadré noir d'attente
+            if (boiteAttente != null) boiteAttente.style.display = DisplayStyle.Flex;
         }
     }
 
@@ -182,14 +191,6 @@ public class MenuMultijoueur : NetworkBehaviour
         MettreAJourAffichageListe();
     }
 
-    private void SurJoueurConnecte(ulong clientId)
-    {
-        // Si je suis le Client et que c'est moi qui viens de me connecter avec succès
-        if (!IsServer && clientId == NetworkManager.Singleton.LocalClientId)
-        {
-            if (texteAttente != null) texteAttente.text = "Connecté ! En attente de l'hôte...";
-        }
-    }
 
     private void SurJoueurDeconnecte(ulong clientId)
     {
