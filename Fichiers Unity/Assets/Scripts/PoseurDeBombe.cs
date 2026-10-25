@@ -63,7 +63,7 @@ public class PoseurDeBombe : NetworkBehaviour
         if (IsOwner && monInventaire != null)
         {
             // À ADAPTER : Appelez ici la fonction de votre script Inventaire qui fait l'inverse de AjouterBombeSurCarte()
-            // Exemple : monInventaire.EnleverBombeDeCarte();
+            monInventaire.EnleverBombeDeCarte();
         }
     }
 }
